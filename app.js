@@ -34,7 +34,7 @@ app.post("/out",(req,res)=>{
         var sdk = require("microsoft-cognitiveservices-speech-sdk");
         var readline = require("readline");
     
-        //var key = "d6761468257a4a3aa580d4114407be62";
+        
         var region = "eastus";
         var audioFile = "testaudio.wav";
     
@@ -73,7 +73,7 @@ app.post("/out",(req,res)=>{
 app.get("/speechtotext",async (req,res)=>{
     res.set({ 'Content-Length': 70 });
     const sdk = require("microsoft-cognitiveservices-speech-sdk");
-   // var key = "d6761468257a4a3aa580d4114407be62";
+   
         var region = "eastus";
     const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.KEY, region);
     speechConfig.speechRecognitionLanguage = "en-US";
