@@ -13,8 +13,15 @@ app.get("/",(req,res)=>{
     res.sendFile(__dirname+"/index.html")
 })
 
-app.get('/audio',function(req,res){
+app.get('/audio', async function(req,res){
+    try{
+    res.set({ 'Content-Length': 70 });
     ms.pipe(req, res, './testaudio.wav');
+    res.end();
+    }catch (err){
+        console.log(err);
+    }
+    //res.connection.end();
   });
 
 app.post("/out",(req,res)=>{
@@ -63,7 +70,8 @@ app.post("/out",(req,res)=>{
     }());
 })
 
-app.get("/speechtotext",(req,res)=>{
+app.get("/speechtotext",async (req,res)=>{
+    res.set({ 'Content-Length': 70 });
     const sdk = require("microsoft-cognitiveservices-speech-sdk");
    // var key = "d6761468257a4a3aa580d4114407be62";
         var region = "eastus";
@@ -101,6 +109,7 @@ let audioConfig = sdk.AudioConfig.fromWavFileInput(fs.readFileSync("testaudio.wa
 
             
         });
+        res.end();
     }())
 
 
