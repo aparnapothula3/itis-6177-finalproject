@@ -77,8 +77,7 @@ let audioConfig = sdk.AudioConfig.fromWavFileInput(fs.readFileSync("testaudio.wa
             switch (result.reason) {
                 case sdk.ResultReason.RecognizedSpeech:
                     console.log(`RECOGNIZED: Text=${result.text}`);
-                    res.send(`RECOGNIZED: Text=${result.text}`)
-                   // res.json(result.text)
+                    res.send(`Speech to Text: ${result.text}`)
                     break;
                 case sdk.ResultReason.NoMatch:
                     console.log("NOMATCH: Speech could not be recognized.");
