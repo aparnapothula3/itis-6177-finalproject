@@ -5,6 +5,7 @@ const app = express()
 const port = 3000
 const ms = require('mediaserver');
 const fs = require('fs')
+const path = require('path');
 
 
 app.use(bodyParser.urlencoded({extended:true}))
@@ -13,28 +14,18 @@ app.get("/",(req,res)=>{
     res.sendFile(__dirname+"/index.html")
 })
 
-app.get('/audio', async function(req,res){
-    try{
-    res.set({ 'Content-Length': 70 });
-    ms.pipe(req, res, './testaudio.wav');
-    res.end();
-    }catch (err){
-        console.log(err);
-    }
-    //res.connection.end();
-  });
+app.get('/audio',function(req,res){
+ res.download(path.resolve('./testaudio.wav'));
+
+});
 
 app.post("/out",(req,res)=>{
 
-    // Create the speech synthesizer.
-    (function() {
-
-        "use strict";
+    "use strict";
     
         var sdk = require("microsoft-cognitiveservices-speech-sdk");
         var readline = require("readline");
     
-        
         var region = "eastus";
         var audioFile = "testaudio.wav";
     
@@ -47,33 +38,28 @@ app.post("/out",(req,res)=>{
         // Create the speech synthesizer.
         var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
         var input = req.body.audio
-          // Start the synthesizer and wait for a result.
-          synthesizer.speakTextAsync(input,
-              function (result) {
-            if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-              console.log("synthesis finished.");
-            } else {
-              console.error("Speech synthesis canceled, " + result.errorDetails +
-                  "\nDid you set the speech resource key and region values?");
-            }
-            synthesizer.close();
-            synthesizer = null;
-          },
-              function (err) {
-            console.trace("err - " + err);
-            synthesizer.close();
-            synthesizer = null;
-          });
-          res.json("Text got converted to speech:Please navigate to /audio")
-        
-    
-    }());
+        synthesizer.speakTextAsync(input,
+            function (result) {
+          if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+            console.log("synthesis finished.");
+          } else {
+            console.error("Speech synthesis canceled, " + result.errorDetails +
+                "\nDid you set the speech resource key and region values?");
+          }
+          synthesizer.close();
+          synthesizer = null;
+        },
+            function (err) {
+          console.trace("err - " + err);
+          synthesizer.close();
+          synthesizer = null;
+        });
+        res.json("Text got converted to speech:Please navigate to /audio")
 })
 
-app.get("/speechtotext",async (req,res)=>{
-    res.set({ 'Content-Length': 70 });
+app.get("/speechtotext",(req,res)=>{
     const sdk = require("microsoft-cognitiveservices-speech-sdk");
-   
+   // var key = "d6761468257a4a3aa580d4114407be62";
         var region = "eastus";
     const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.KEY, region);
     speechConfig.speechRecognitionLanguage = "en-US";
@@ -109,14 +95,12 @@ let audioConfig = sdk.AudioConfig.fromWavFileInput(fs.readFileSync("testaudio.wa
 
             
         });
-        res.end();
     }())
 
 
 })
 
-
-
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   })
+
