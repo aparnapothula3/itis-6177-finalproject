@@ -6,9 +6,12 @@ const port = 3000
 const ms = require('mediaserver');
 const fs = require('fs')
 const path = require('path');
+const cors = require('cors')
 
 
 app.use(bodyParser.urlencoded({extended:true}))
+app.use(cors())
+
 
 app.get("/",(req,res)=>{
     res.sendFile(__dirname+"/index.html")
@@ -41,6 +44,7 @@ app.post("/out",(req,res)=>{
         synthesizer.speakTextAsync(input,
             function (result) {
           if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+            res.download(path.resolve('./testaudio.wav'));
             console.log("synthesis finished.");
           } else {
             console.error("Speech synthesis canceled, " + result.errorDetails +
@@ -54,7 +58,9 @@ app.post("/out",(req,res)=>{
           synthesizer.close();
           synthesizer = null;
         });
-        res.json("Text got converted to speech:Please navigate to /audio")
+       
+        
+        
 })
 
 app.get("/speechtotext",(req,res)=>{
